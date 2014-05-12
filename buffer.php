@@ -100,31 +100,6 @@ class BufferApp {
 		'1031' => 'Media filesize out of acceptable range.',
 	);
 	
-	public $responses = array(
-		'403' => 'Permission denied.',
-		'404' => 'Endpoint not found.',
-		'405' => 'Method not allowed.',
-		'500' => 'An unknown error occurred.',
-		'403' => 'Access token required.',
-		'403' => 'Not within application scope.',
-		'400' => 'Parameter not recognized.',
-		'400' => 'Required parameter missing.',
-		'406' => 'Unsupported response format.',
-		'404' => 'Profile could not be found.',
-		'403' => 'No authorization to access profile.',
-		'400' => 'Profile did not save successfully.',
-		'403' => 'Profile schedule limit reached.',
-		'403' => 'Profile limit for user has been reached.',
-		'404' => 'Update could not be found.',
-		'403' => 'No authorization to access update.',
-		'400' => 'Update did not save successfully.',
-		'403' => 'Update limit for profile has been reached.',
-		'403' => 'Update limit for team profile has been reached.',
-		'403' => 'Update soft limit for profile reached.',
-		'400' => 'Media filetype not supported.',
-		'400' => 'Media filesize out of acceptable range.',
-	);
-	
 	/**
 	 * Construct the BufferApp class
 	 * 
@@ -215,7 +190,7 @@ class BufferApp {
 	 * @param  boolean $post 
 	 * @return string
 	 */
-	public function request($url = '', $data = '', $post = true) {
+	public function request($url, $data = array(), $post = true) {
 		if(!$url) return false;
 		if(!$data || !is_array($data)) $data = array();
 					
@@ -248,7 +223,7 @@ class BufferApp {
 	 * @param  string $data 
 	 * @return mixed   
 	 */
-	public function get($url = '', $data = '') {
+	public function get($url, $data = array()) {
 		return $this->request($url, $data, false);
 	}
 	
@@ -258,7 +233,7 @@ class BufferApp {
 	 * @param  string $data 
 	 * @return mixed      
 	 */
-	public function post($url = '', $data = '') {
+	public function post($url, $data = array()) {
 		return $this->request($url, $data, true);
 	}
 		
