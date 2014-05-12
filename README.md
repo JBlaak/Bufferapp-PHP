@@ -7,5 +7,7 @@ This is a fork of https://github.com/thewebguy/bufferapp-php with extended comme
 
 ## Additions/changes
 
-Changed casing of almost all methods and added support for Composer.
+- Added composer
+- Changed casing of most methods
+- Added options that are merged with login url params, most notable support for: redirect_uri
 

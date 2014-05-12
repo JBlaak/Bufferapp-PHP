@@ -273,14 +273,18 @@ class BufferApp {
 		
 	/**
 	 * Fetch url to redirect client to for the OAuth2 process
+	 *
+	 * @param  array $options are merged with the query
 	 * @return String
 	 */
-	public function getLoginUrl() {
+	public function getLoginUrl($options) {
 		$query = array(
 			'client_id' => $this->client_id,
 			'redirect_uri' => $this->callback_url,
 			'response_type' => 'code'
 			);
+
+		$query = array_merge($query, $options);
 
 		return $this->authorize_url . '?' . http_build_query($query);
 	}
