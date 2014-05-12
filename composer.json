@@ -1,0 +1,28 @@
+{
+    "name": "jblaak/bufferapp-php",
+    "version": "1.0.0",
+    "description": "Simple SDK for BufferApp (forked from thewebguy)",
+    "keywords": [
+        "php", 
+        "bufferapp",
+        "social media"
+        ],
+    "authors": [
+        {
+            "name": "thewebguy",
+            "role": "Developer"
+        },
+        {
+            "name": "Joris Blaak",
+            "role": "Developer",
+            "email": "joris@label305.com"
+        }
+    ],
+    "support": {
+        "source": "https://github.com/JBlaak/bufferapp-php"
+    },
+    "require": {
+        "php": ">=5.3",
+        "composer/installers": "*"
+    }
+}
