@@ -7,5 +7,5 @@ This is a fork of https://github.com/thewebguy/bufferapp-php with extended comme
 
 ## Additions/changes
 
-Changes casing of almost all methods and added support for Composer.
+Changed casing of almost all methods and added support for Composer.
 
