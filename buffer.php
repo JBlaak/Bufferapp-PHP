@@ -54,6 +54,12 @@ class BufferApp {
 	 * @var boolean
 	 */
 	public $secure = true;
+
+	/**
+	 * Weither the last request was ok
+	 * @var boolean
+	 */
+	private $ok = true;
 	
 	/**
 	 * Supported endpoints
@@ -194,12 +200,12 @@ class BufferApp {
 		$response = $this->post($this->access_token_url, $data);
 
 		if(!isset($response['access_token'])) {
-			return false;
+			return $response;
 		}
 
 		$this->setAccessToken($response['access_token']);
 		
-		return $this->access_token;
+		return $response;
 	}
 	
 	/**
@@ -210,6 +216,10 @@ class BufferApp {
 	 * @return string
 	 */
 	public function request($url, $data = array(), $post = true) {
+
+		//Reset ok status
+		$this->ok = true;
+
 		if(!$url) {
 			return false;
 		}
@@ -244,11 +254,21 @@ class BufferApp {
 
 		$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
+		//Some kind of error code
 		if($code >= 400) {
+			$this->ok = false;
 			return $this->error($code, $rs);
 		}
 		
 		return json_decode($rs, true);
+	}
+
+	/**
+	 * Check if everything is ok
+	 * @return boolean 
+	 */
+	public function isOk() {
+		return $this->ok;
 	}
 	
 	/**
