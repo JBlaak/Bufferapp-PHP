@@ -48,6 +48,12 @@ class BufferApp {
 	 * @var string
 	 */
 	private $buffer_url = 'https://api.bufferapp.com/1';
+
+	/**
+	 * Weither or not to validate the ssl certificate
+	 * @var boolean
+	 */
+	public $secure = true;
 	
 	/**
 	 * Supported endpoints
@@ -76,6 +82,7 @@ class BufferApp {
 	public $errors = array(
 		'invalid-endpoint' => 'The endpoint you supplied does not appear to be valid.',
 
+		'400' => 'Bad request.',
 		'403' => 'Permission denied.',
 		'404' => 'Endpoint not found.',
 		'405' => 'Method not allowed.',
@@ -112,9 +119,8 @@ class BufferApp {
 		if($client_secret) $this->setClientSecret($client_secret);
 		if($callback_url) $this->setCallBackUrl($callback_url);
 		
-		if($_GET['code']) {
+		if(isset($_GET['code'])) {
 			$this->code = $_GET['code'];
-			$this->create_access_token_url();
 		}
 	}
 	
@@ -152,18 +158,31 @@ class BufferApp {
 	
 	/**
 	 * Dispatch an error
-	 * @param  Unknown $error 
+	 * @param  integer $error 
+	 * @param  string $content
 	 * @return array
 	 */
-	public function error($error) {
-		return array('error' => $this->errors[$error]);
+	public function error($error, $content) {
+		$content = @json_decode($content, true);
+
+		if(is_array($content)) {
+			return $content;
+		} else if(isset($this->errors[$error])) {
+			return array('error' => $this->errors[$error]);
+		} else {
+			return array('error' => 'Unkown error ['.$error.']');
+		}
 	}
 	
 	/**
 	 * Resolve the access token after the authentication
 	 * @return string|boolean false on error
 	 */
-	public function resolveAccessToken() {
+	public function resolveAccessToken($code = null) {
+		if(!is_null($code)) {
+			$this->code = $code;
+		}
+
 		$data = array(
 			'code' => $this->code,
 			'grant_type' => 'authorization_code',
@@ -191,11 +210,17 @@ class BufferApp {
 	 * @return string
 	 */
 	public function request($url, $data = array(), $post = true) {
-		if(!$url) return false;
-		if(!$data || !is_array($data)) $data = array();
-					
-		$options = array(CURLOPT_RETURNTRANSFER => true, CURLOPT_HEADER => false);
+		if(!$url) {
+			return false;
+		}
+			
+		//Curl options		
+		$options = array(
+			CURLOPT_RETURNTRANSFER => true, 
+			CURLOPT_HEADER => false
+			);
 		
+		//Dependent on HTTP method set data
 		if($post) {
 			$options += array(
 				CURLOPT_POST => $post,
@@ -204,14 +229,23 @@ class BufferApp {
 		} else {
 			$url .= '?' . http_build_query($data);
 		}
+
+		//Add ignoring of ssl when not in secure mode
+		if(!$this->secure) {
+			$options += array(
+				CURLOPT_SSL_VERIFYHOST => false,
+				CURLOPT_SSL_VERIFYPEER => false
+				);
+		}
 		
 		$ch = curl_init($url);
 		curl_setopt_array($ch, $options);
 		$rs = curl_exec($ch);
-		
+
 		$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
 		if($code >= 400) {
-			return $this->error($code);
+			return $this->error($code, $rs);
 		}
 		
 		return json_decode($rs, true);
